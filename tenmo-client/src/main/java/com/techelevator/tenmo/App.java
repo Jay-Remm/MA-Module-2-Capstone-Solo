@@ -1,13 +1,25 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.services.AccountServices;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
+
 
 public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
+    private RestTemplate restTemplate = new RestTemplate();
 
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
@@ -85,8 +97,11 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
-		
+        AccountServices accountServices = new AccountServices(API_BASE_URL, currentUser);
+        BigDecimal balance = accountServices.getBalance(currentUser.getUser().getId());
+        System.out.println("Your current account balance is: $" + balance);
+        System.out.println();
+        mainMenu();
 	}
 
 	private void viewTransferHistory() {
