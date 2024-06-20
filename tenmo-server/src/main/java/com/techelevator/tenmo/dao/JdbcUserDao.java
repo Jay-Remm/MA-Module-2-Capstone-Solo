@@ -71,6 +71,25 @@ public class JdbcUserDao implements UserDao {
         return user;
     }
 
+    // Gets the user_id from the account_id to use in making my Transfer model.
+    @Override
+    public User getUserByAccount(int id) {
+        User user = null;
+        String sql = "SELECT user_id, username, password_hash " +
+                        "FROM tenmo_user " +
+                            "JOIN account a USING(user_id) " +
+                        "WHERE a.account_id = ?;";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+            if (results.next()) {
+                user = mapRowToUser(results);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Cannot connect to server or database", e);
+        }
+        return user;
+    }
+
     @Override
     public User createUser(RegisterUserDto user) {
         User newUser = null;
@@ -102,5 +121,7 @@ public class JdbcUserDao implements UserDao {
         user.setAuthorities("USER");
         return user;
     }
+
+
 
 }
