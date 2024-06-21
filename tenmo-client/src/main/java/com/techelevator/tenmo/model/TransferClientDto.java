@@ -1,20 +1,24 @@
 package com.techelevator.tenmo.model;
 
-import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
-public class MakeTransferDto {
+public class TransferClientDto {
 
-    @NotEmpty
     private int userIdTo;
-    @NotEmpty
     private int userIdFrom;
-    @NotEmpty
     private BigDecimal amount;
-    @NotEmpty
     private int transferType;
-    @NotEmpty
     private int transferStatus;
+
+    public TransferClientDto() { }
+
+    public TransferClientDto(int userIdTo, int userIdFrom, BigDecimal amount, int transferType, int transferStatus) {
+        this.userIdTo = userIdTo;
+        this.userIdFrom = userIdFrom;
+        this.amount = amount;
+        this.transferType = transferType;
+        this.transferStatus = transferStatus;
+    }
 
     public int getUserIdTo() {
         return userIdTo;

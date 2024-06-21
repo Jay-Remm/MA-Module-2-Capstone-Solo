@@ -64,10 +64,10 @@ public class JdbcServicesDao implements ServicesDao{
         Transfer newTransfer = null;
         // Make new transfer
         String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                            "VALUES (?, 1, ?, ?, ?) " +
+                            "VALUES (?, ?, ?, ?, ?) " +
                             "RETURNING transfer_id;";
         try {
-            int newTransferId = jdbcTemplate.queryForObject(sql, int.class, transfer.getTransferType(), transfer.getUserIdFrom(), transfer.getUserIdTo(), transfer.getAmount());
+            int newTransferId = jdbcTemplate.queryForObject(sql, int.class, transfer.getTransferType(), transfer.getTransferStatus(), transfer.getUserIdFrom(), transfer.getUserIdTo(), transfer.getAmount());
             newTransfer = getTransferById(newTransferId);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
@@ -114,6 +114,25 @@ public class JdbcServicesDao implements ServicesDao{
         return transfers;
     }
 
+    @Override
+    public List<Transfer> getPendingTransfers(int userId) {
+        List<Transfer> transfers = new ArrayList<>();
+        String sql = "SELECT transfer_id, tt.transfer_type_desc, ts.transfer_status_desc, account_from, account_to, amount " +
+                        "FROM transfer " +
+                            "JOIN transfer_type tt USING(transfer_type_id) " +
+                            "JOIN transfer_status ts USING(transfer_status_id) " +
+                        "WHERE account_from = ? AND transfer_status_id = 1;";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+            while (results.next()) {
+                Transfer transfer = mapRowToTransfer(results);
+                transfers.add(transfer);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Cannot connect to server or database", e);
+        }
+        return transfers;
+    }
 
     private Transfer mapRowToTransfer(SqlRowSet rs) {
         Transfer transfer = new Transfer();

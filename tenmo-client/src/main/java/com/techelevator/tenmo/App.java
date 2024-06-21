@@ -1,8 +1,6 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AccountServices;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
@@ -115,8 +113,42 @@ public class App {
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
-		
+        AccountServices accountServices = new AccountServices(API_BASE_URL, currentUser);
+        System.out.println("-------------------------------------------");
+        System.out.println("Users");
+        System.out.printf("%-12s %-30s", "ID", "Name");
+        System.out.println("-------------------------------------------");
+        User[] users = accountServices.listUsers();
+        for (User user : users) {
+            if (user.getId() == currentUser.getUser().getId()) {
+            } else {
+                System.out.printf("%-12s %-30s", user.getId(), user.getUsername());
+            }
+        }
+        System.out.println();
+        int userTo = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel): ");
+        // verify that I am not sending money to myself
+        if (userTo == currentUser.getUser().getId()) {
+            System.out.println("User cannot send TE Bucks to themselves.");
+            consoleService.pause();
+            sendBucks();
+        }
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
+        // verify that I have the amount in my account before making the transfer
+        // verify that the amount is not 0 or negative
+        if (amount.compareTo(accountServices.getBalance(currentUser.getUser().getId())) > 0) {
+            System.out.println("Balance is not sufficient for transfer.");
+            consoleService.pause();
+            sendBucks();
+        } else if (amount.compareTo(BigDecimal.ZERO) <= 0 ) {
+            System.out.println("Amount must not be 0 or negative.");
+            consoleService.pause();
+            sendBucks();
+        }
+        // make new DTO and then pass it into making a newTransfer, and then because send transfers are automatically approved, push the transfer.
+        TransferClientDto newTransfer = new TransferClientDto(userTo, currentUser.getUser().getId(), amount, 2, 2);
+        Transfer transferReturned = accountServices.makeTransfer(newTransfer);
+        accountServices.pushTransfer(transferReturned.getId());
 	}
 
 	private void requestBucks() {

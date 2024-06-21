@@ -54,9 +54,16 @@ public class ServicesController {
         return userDao.getUsers();
     }
 
+    // Push the transfers so they reflect in the account, start and close a transaction and update
     @RequestMapping(path = "/finalize-transfer/{id}", method = RequestMethod.PUT)
     public void pushTransfer(@PathVariable int id) {
         servicesDao.pushTransfer(id);
+    }
+
+    // Get pending transfers
+    @RequestMapping(path = "/transfer/pending/{id}", method = RequestMethod.GET)
+    public List<Transfer> listPendingTransfers(@PathVariable int id) {
+        return servicesDao.getPendingTransfers(id);
     }
 
 }
