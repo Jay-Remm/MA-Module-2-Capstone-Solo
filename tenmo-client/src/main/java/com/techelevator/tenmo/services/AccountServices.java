@@ -32,13 +32,15 @@ public class AccountServices {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(currentUser.getToken());
         HttpEntity<Void> entity = new HttpEntity<>(headers);
+        BigDecimal balance = null;
         try {
             ResponseEntity<BigDecimal> response = restTemplate.exchange(
                     baseUrl + "/balance/" + userId, HttpMethod.GET, entity, BigDecimal.class);
-            return response.getBody();
+            balance = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
+        return balance;
     }
 
     public Transfer makeTransfer(TransferClientDto transfer) {
@@ -92,7 +94,8 @@ public class AccountServices {
         headers.setBearerAuth(currentUser.getToken());
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         try {
-            restTemplate.exchange(baseUrl + "/finalize-transfer/" + id, HttpMethod.PUT, entity, void.class);
+            restTemplate.exchange(baseUrl + "/finalize-transfer/" + id, HttpMethod.PUT, entity, Void.class);
+            System.out.print("Transfer sent successfully");
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }

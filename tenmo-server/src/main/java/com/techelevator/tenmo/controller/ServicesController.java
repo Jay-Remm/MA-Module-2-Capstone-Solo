@@ -4,6 +4,7 @@ import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.MakeTransferDto;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.techelevator.tenmo.dao.ServicesDao;
@@ -20,8 +21,9 @@ public class ServicesController {
     private ServicesDao servicesDao;
     private UserDao userDao;
 
-    public ServicesController(ServicesDao servicesDao) {
+    public ServicesController(ServicesDao servicesDao, UserDao userDao) {
         this.servicesDao = servicesDao;
+        this.userDao = userDao;
     }
 
     // Get the balance from jdbcServicesDao which gets balance from database
@@ -56,8 +58,9 @@ public class ServicesController {
 
     // Push the transfers so they reflect in the account, start and close a transaction and update
     @RequestMapping(path = "/finalize-transfer/{id}", method = RequestMethod.PUT)
-    public void pushTransfer(@PathVariable int id) {
+    public ResponseEntity<Void> pushTransfer(@PathVariable int id) {
         servicesDao.pushTransfer(id);
+        return ResponseEntity.noContent().build(); // Return a 204 No Content response
     }
 
     // Get pending transfers

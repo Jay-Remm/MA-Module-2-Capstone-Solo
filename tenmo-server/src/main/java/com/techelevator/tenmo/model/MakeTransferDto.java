@@ -1,19 +1,23 @@
 package com.techelevator.tenmo.model;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class MakeTransferDto {
 
-    @NotEmpty
+    // Can only use @NotEmpty with strings, collections, maps, and arrays, Need to use different validators for ints and BigDecimals
+    @NotNull
     private int userIdTo;
-    @NotEmpty
+    @NotNull
     private int userIdFrom;
-    @NotEmpty
+    @NotNull(message = "Amount must not be null")
+    @DecimalMin(value = "0.00", inclusive = false, message = "Amount must be greater than zero")
     private BigDecimal amount;
-    @NotEmpty
+    @NotNull
     private int transferType;
-    @NotEmpty
+    @NotNull
     private int transferStatus;
 
     public int getUserIdTo() {

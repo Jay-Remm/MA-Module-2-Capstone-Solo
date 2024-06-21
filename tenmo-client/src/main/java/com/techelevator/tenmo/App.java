@@ -116,13 +116,13 @@ public class App {
         AccountServices accountServices = new AccountServices(API_BASE_URL, currentUser);
         System.out.println("-------------------------------------------");
         System.out.println("Users");
-        System.out.printf("%-12s %-30s", "ID", "Name");
+        System.out.printf("%-12s %-30s %n", "ID", "Name");
         System.out.println("-------------------------------------------");
         User[] users = accountServices.listUsers();
         for (User user : users) {
             if (user.getId() == currentUser.getUser().getId()) {
             } else {
-                System.out.printf("%-12s %-30s", user.getId(), user.getUsername());
+                System.out.printf("%-12s %-30s %n", user.getId(), user.getUsername());
             }
         }
         System.out.println();
@@ -148,6 +148,8 @@ public class App {
         // make new DTO and then pass it into making a newTransfer, and then because send transfers are automatically approved, push the transfer.
         TransferClientDto newTransfer = new TransferClientDto(userTo, currentUser.getUser().getId(), amount, 2, 2);
         Transfer transferReturned = accountServices.makeTransfer(newTransfer);
+        System.out.println("Confirm sending $" + amount + " to user: " + userTo);
+        consoleService.pause();
         accountServices.pushTransfer(transferReturned.getId());
 	}
 
