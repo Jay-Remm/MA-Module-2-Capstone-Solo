@@ -19,4 +19,6 @@ public interface ServicesDao {
     List<Transfer> getTransfers(int userId);
 
     List<Transfer> getPendingTransfers(int userId);
+
+    void updateTransferStatus(int transferId, int statusId);
 }

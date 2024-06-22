@@ -95,7 +95,7 @@ public class AccountServices {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         try {
             restTemplate.exchange(baseUrl + "/finalize-transfer/" + id, HttpMethod.PUT, entity, Void.class);
-            System.out.print("Transfer sent successfully");
+            System.out.print("Transfer sent successfully. ");
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
@@ -131,5 +131,17 @@ public class AccountServices {
             BasicLogger.log(e.getMessage());
         }
         return transfers;
+    }
+
+    public void updateTransferStatus(int transferId, int statusId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(currentUser.getToken());
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        try {
+            restTemplate.exchange(baseUrl + "/update-status/" + transferId + "/" + statusId, HttpMethod.PUT, entity, Void.class);
+            System.out.print("Transfer status updated. ");
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
     }
 }

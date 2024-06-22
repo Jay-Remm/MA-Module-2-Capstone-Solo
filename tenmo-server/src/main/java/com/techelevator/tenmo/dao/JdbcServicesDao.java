@@ -137,6 +137,18 @@ public class JdbcServicesDao implements ServicesDao{
         return transfers;
     }
 
+    @Override
+    public void updateTransferStatus(int transferId, int statusId) {
+        String sql = "UPDATE transfer SET transfer_status_id = ? WHERE transfer_id = ?;";
+        try {
+            jdbcTemplate.update(sql, statusId, transferId);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Cannot connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+    }
+
     private int getAccountIdFromUser(int userId) {
         int accountId = 0;
         String sql = "SELECT account_id FROM account WHERE user_id = ?;";

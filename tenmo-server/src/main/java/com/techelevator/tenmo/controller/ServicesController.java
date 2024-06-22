@@ -69,4 +69,10 @@ public class ServicesController {
         return servicesDao.getPendingTransfers(id);
     }
 
+    @RequestMapping(path = "/update-status/{transferId}/{statusId}", method = RequestMethod.PUT)
+    public ResponseEntity<Void> pushTransfer(@PathVariable int transferId, @PathVariable int statusId) {
+        servicesDao.updateTransferStatus(transferId, statusId);
+        return ResponseEntity.noContent().build(); // Return a 204 No Content response
+    }
+
 }

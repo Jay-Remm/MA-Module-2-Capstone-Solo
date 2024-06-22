@@ -132,8 +132,39 @@ public class App {
 	}
 
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
+        AccountServices accountServices = new AccountServices(API_BASE_URL, currentUser);
+        System.out.println("-------------------------------------------");
+        System.out.println("Pending Transfers");
+        System.out.printf("%-12s %-25s %-8s %n", "ID", "To", "Amount");
+        System.out.println("-------------------------------------------");
+        Transfer[] transfers = accountServices.listPendingTransfers(currentUser.getUser().getId());
+        for (Transfer transfer : transfers) {
+            System.out.printf("%-12s %-25s %-2s %7s %n", transfer.getId(), transfer.getAccountTo(), "$", transfer.getAmount());
+        }
+        System.out.println("-------------------------------------------");
+        int transferId = consoleService.promptForInt("Please enter transfer ID to approve/reject (0 to cancel): ");
+        Transfer specificTransfer = accountServices.getTransferById(transferId);
+        System.out.println();
+        System.out.println("1: Approve");
+        System.out.println("2: Reject");
+        System.out.println("0: Don't approve or reject");
+        System.out.println("-------------------------------------------");
+        int choice = consoleService.promptForInt("Please choose an option: ");
+        if (choice == 1) {
+            // check if I have the money in my account and then push the transfer
+            if (specificTransfer.getAmount().compareTo(accountServices.getBalance(currentUser.getUser().getId())) > 0) {
+                System.out.println("Balance is not sufficient for transfer.");
+                consoleService.pause();
+                viewPendingRequests();
+            } else {
+                accountServices.pushTransfer(specificTransfer.getId());
+                accountServices.updateTransferStatus(specificTransfer.getId(), 2);
+            }
+        } else if (choice == 2) {
+            accountServices.updateTransferStatus(specificTransfer.getId(), 3);
+        } else if (choice == 0) {
+            mainMenu();
+        }
 	}
 
 	private void sendBucks() {
@@ -153,7 +184,7 @@ public class App {
         int userTo = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel): ");
         // verify that I am not sending money to myself
         if (userTo == currentUser.getUser().getId()) {
-            System.out.println("User cannot send TE Bucks to themselves.");
+            System.out.println("Users cannot send TE Bucks to themselves.");
             consoleService.pause();
             sendBucks();
         }
@@ -178,8 +209,37 @@ public class App {
 	}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
-		
-	}
+        AccountServices accountServices = new AccountServices(API_BASE_URL, currentUser);
+        System.out.println("-------------------------------------------");
+        System.out.println("Users");
+        System.out.printf("%-12s %-30s %n", "ID", "Name");
+        System.out.println("-------------------------------------------");
+        User[] users = accountServices.listUsers();
+        for (User user : users) {
+            if (user.getId() == currentUser.getUser().getId()) {
+            } else {
+                System.out.printf("%-12s %-30s %n", user.getId(), user.getUsername());
+            }
+        }
+        System.out.println();
+        int userFrom = consoleService.promptForInt("Enter ID of user you are requesting from (0 to cancel): ");
+        // verify that I am not sending money to myself
+        if (userFrom == currentUser.getUser().getId()) {
+            System.out.println("Users cannot send TE Bucks to themselves.");
+            consoleService.pause();
+            sendBucks();
+        }
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
+        // verify that the amount is not 0 or negative
+        if (amount.compareTo(BigDecimal.ZERO) <= 0 ) {
+            System.out.println("Amount must not be 0 or negative.");
+            consoleService.pause();
+            sendBucks();
+        }
+        TransferClientDto newTransfer = new TransferClientDto(currentUser.getUser().getId(), userFrom, amount, 1, 1);
+        Transfer transferReturned = accountServices.makeTransfer(newTransfer);
+        System.out.println("Confirm requesting $" + amount + " from user: " + userFrom);
+        consoleService.pause();
+    }
 
 }
