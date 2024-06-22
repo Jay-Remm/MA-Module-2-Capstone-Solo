@@ -106,7 +106,7 @@ public class JdbcServicesDao implements ServicesDao{
                             "JOIN transfer_status ts USING(transfer_status_id) " +
                         "WHERE account_from = ? OR account_to = ?;";
         try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, userId);
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, getAccountIdFromUser(userId), getAccountIdFromUser(userId));
             while (results.next()) {
                 Transfer transfer = mapRowToTransfer(results);
                 transfers.add(transfer);
@@ -126,7 +126,7 @@ public class JdbcServicesDao implements ServicesDao{
                             "JOIN transfer_status ts USING(transfer_status_id) " +
                         "WHERE account_from = ? AND transfer_status_id = 1;";
         try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, getAccountIdFromUser(userId));
             while (results.next()) {
                 Transfer transfer = mapRowToTransfer(results);
                 transfers.add(transfer);

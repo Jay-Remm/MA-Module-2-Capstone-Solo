@@ -103,8 +103,32 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		
+		AccountServices accountServices = new AccountServices(API_BASE_URL, currentUser);
+        System.out.println("-------------------------------------------");
+        System.out.println("Transfers");
+        System.out.printf("%-12s %-25s %-8s %n", "ID", "From/To", "Amount");
+        System.out.println("-------------------------------------------");
+        Transfer[] transfers = accountServices.listTransfers(currentUser.getUser().getId());
+        for (Transfer transfer : transfers) {
+            if (currentUser.getUser().getUsername().equals(transfer.getAccountFrom())) {
+                System.out.printf("%-12s %-6s %-19s %-2s %7s %n", transfer.getId(), "To: ", transfer.getAccountTo(), "$", transfer.getAmount());
+            } else if (currentUser.getUser().getUsername().equals(transfer.getAccountTo())) {
+                System.out.printf("%-12s %-6s %-19s %-2s %7s %n", transfer.getId(), "From: ", transfer.getAccountFrom(), "$", transfer.getAmount());
+            }
+        }
+        System.out.println("-------------------------------------------");
+        int transferId = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
+        Transfer specificTransfer = accountServices.getTransferById(transferId);
+        System.out.println();
+        System.out.println("-------------------------------------------");
+        System.out.println("Transfer Details");
+        System.out.println("-------------------------------------------");
+        System.out.println("Id: " + specificTransfer.getId());
+        System.out.println("From: " + specificTransfer.getAccountFrom());
+        System.out.println("To: " + specificTransfer.getAccountTo());
+        System.out.println("Type: " + specificTransfer.getType());
+        System.out.println("Status: " + specificTransfer.getStatus());
+        System.out.println("Amount: $" + specificTransfer.getAmount());
 	}
 
 	private void viewPendingRequests() {
