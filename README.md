@@ -1,4 +1,11 @@
+This is my Merit America final Capstone Project. The goal was to build a knock-off money transfer app called Tenmo (really original, I know) where the user can send and request transfers from other users in a command line App. The technologies and methodologies leveraged were to test understanding of Java, SQL, spring framework, and RESTful APIs writing both client and server side code.
+
+While I worked on this as a part of a group, which helped develop group dynamics in coding, I completed the project solo beforehand to really gain comprehension on the concepts we covered in the program, I was then able to use the understanding of my code and shape it into my groups code to make a cohesive project.
+
+Enjoy looking through the code, and if you need to run it, make sure you create a database, run the sql database code from the repo through it and then make a couple users to play with!
+
 # Module 2 Capstone - TEnmo
+
 
 Congratulations—you've landed a job with TEnmo, whose product is an online payment service for transferring "TE bucks" between friends. However, they don't have a product yet. You've been tasked with writing a RESTful API server and command-line application.
 
